@@ -1,0 +1,15 @@
+﻿  02_IOCP_Model.cpp
+e:\study\mainprojectshare\05_finalproject_server\finalproject_server\02_work_server_iocp\02_iocp_model.cpp(52): warning C4060: switch문에 'case' 또는 'default' 레이블이 없습니다.
+e:\study\mainprojectshare\05_finalproject_server\finalproject_server\02_work_server_iocp\02_iocp_model.cpp(79): warning C4060: switch문에 'case' 또는 'default' 레이블이 없습니다.
+  코드를 생성하고 있습니다...
+  컴파일하고 있습니다...
+  03_Logic_Work_Server.cpp
+e:\study\mainprojectshare\05_finalproject_server\finalproject_server\02_work_server_iocp\03_logic_work_server.cpp(19): warning C4477: 'printf' : 서식 문자열 '%x'에 'unsigned int' 형식의 인수가 필요하지만 variadic 인수 2의 형식이 'SOCKETINFO *'입니다.
+e:\study\mainprojectshare\05_finalproject_server\finalproject_server\02_work_server_iocp\03_logic_work_server.cpp(111): warning C4477: 'printf' : 서식 문자열 '%x'에 'unsigned int' 형식의 인수가 필요하지만 variadic 인수 4의 형식이 'SOCKETINFO *'입니다.
+e:\study\mainprojectshare\05_finalproject_server\finalproject_server\02_work_server_iocp\03_logic_work_server.cpp(127): warning C4477: 'printf' : 서식 문자열 '%x'에 'unsigned int' 형식의 인수가 필요하지만 variadic 인수 4의 형식이 'SOCKETINFO *'입니다.
+e:\study\mainprojectshare\05_finalproject_server\finalproject_server\02_work_server_iocp\03_logic_work_server.cpp(132): warning C4477: 'printf' : 서식 문자열 '%x'에 'unsigned int' 형식의 인수가 필요하지만 variadic 인수 4의 형식이 'SOCKETINFO *'입니다.
+  01_Main_TCP_Server.cpp
+  _WIN32_WINNT not defined. Defaulting to _WIN32_WINNT_MAXVER (see WinSDKVer.h)
+  코드를 생성하고 있습니다...
+  02_Work_Server_IOCP.vcxproj -> E:\study\MainProjectShare\05_FinalProject_Server\FinalProject_Server\Debug\02_Work_Server_IOCP.exe
+  02_Work_Server_IOCP.vcxproj -> E:\study\MainProjectShare\05_FinalProject_Server\FinalProject_Server\Debug\02_Work_Server_IOCP.pdb (Full PDB)

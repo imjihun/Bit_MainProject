@@ -1,0 +1,4 @@
+﻿  02_ConnectDB.cpp
+e:\study\mainprojectshare\05_finalproject_server\finalproject_server\01_db_server_iocp\02_connectdb.cpp(594): warning C4101: 'e' :참조되지 않은 지역 변수입니다.
+  01_DB_Server_IOCP.vcxproj -> E:\study\MainProjectShare\05_FinalProject_Server\FinalProject_Server\Debug\01_DB_Server_IOCP.exe
+  01_DB_Server_IOCP.vcxproj -> E:\study\MainProjectShare\05_FinalProject_Server\FinalProject_Server\Debug\01_DB_Server_IOCP.pdb (Full PDB)
