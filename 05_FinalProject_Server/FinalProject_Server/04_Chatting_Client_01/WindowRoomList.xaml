@@ -1,0 +1,23 @@
+﻿<Window x:Class="_04_Chatting_Client_01.WindowRoomList"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:_04_Chatting_Client_01"
+        mc:Ignorable="d"
+        Title="WindowRoomList" Height="500" Width="600">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="1*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Column="0" Height="35" VerticalAlignment="Top" Margin="0,0,0,5" Text="전체 방" FontSize="20" HorizontalAlignment="Center" />
+        <TextBlock Grid.Column="1" Height="35" VerticalAlignment="Top" Margin="0,0,0,5" Text="내 방" FontSize="20" HorizontalAlignment="Center" />
+        <StackPanel Grid.Column="0" x:Name="stackPanel_totallist" Margin="10,50"/>
+        <StackPanel Grid.Column="1" x:Name="stackPanel_mylist" Margin="10,50"/>
+        <TextBlock Grid.Column="0" Grid.ColumnSpan="2" x:Name="textBlock_status" Height="35" Margin="10,0,10,5" TextWrapping="Wrap" Text="status bar" FontSize="20" VerticalAlignment="Bottom"/>
+    </Grid>
+</Window>
