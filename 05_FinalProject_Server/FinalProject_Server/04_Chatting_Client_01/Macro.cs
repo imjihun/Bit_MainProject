@@ -27,5 +27,8 @@ namespace _04_Chatting_Client_01
 		public const int SIZE_ROOM_SUBJECT = 64;
 
 		public const int SIZE_SECRET_KEY = 16;
+
+		public const byte ROOM_INFO_STATUS_SECRET = 0x53;
+		public const byte ROOM_INFO_STATUS_NORMAL = 0x4E;
 	}
 }

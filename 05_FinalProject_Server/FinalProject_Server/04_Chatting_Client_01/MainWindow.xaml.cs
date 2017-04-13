@@ -37,17 +37,7 @@ namespace _04_Chatting_Client_01
 			textBox_id.Focus();
 
 			new MyNetwork();
-
-			test();
-		}
-		void test()
-		{
-			Dictionary<int, string> d = new Dictionary<int, string>();
-			d[1] = "str";
-			if (d.ContainsKey(1))
-				Console.WriteLine("null");
-			else
-				Console.WriteLine("exit");
+			
 		}
 		
 		private void TextBox_id_KeyDown(object sender, KeyEventArgs e)

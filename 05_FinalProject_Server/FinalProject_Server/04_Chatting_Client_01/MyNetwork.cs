@@ -14,7 +14,7 @@ namespace _04_Chatting_Client_01
 	{
 		public static MyNetwork net = null;
 		
-		string IP = "192.168.1.3";
+		string IP = "192.168.1.9";
 		int PORT = 9000;
 		Socket m_sock;
 
@@ -28,22 +28,32 @@ namespace _04_Chatting_Client_01
 			if (net == null)
 				net = this;
 
-			initSocket();
-			m_recv_Timer.Interval = TimeSpan.FromMilliseconds(1);
-			m_recv_Timer.Tick += recvTimerTick;
-		
-			m_recv_Timer.Start();
+			if (initSocket() == 0)
+			{
+				m_recv_Timer.Interval = TimeSpan.FromMilliseconds(1);
+				m_recv_Timer.Tick += recvTimerTick;
+
+				m_recv_Timer.Start();
+			}
 		}
 
-		public void initSocket()
+		public int initSocket()
 		{
-			m_sock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-			m_sock.Connect(IP, PORT);
-			m_sock.Blocking = false;
-		}
-		private void recvTimerTick(object sender, EventArgs e)
-		{
-			recvProcess();
+			try
+			{
+				m_sock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+				if (m_sock != null)
+				{
+					m_sock.Connect(IP, PORT);
+					m_sock.Blocking = false;
+				}
+			}
+			catch(SocketException ex)
+			{
+				DebugLog.debugLog(ex.ToString(), null, 0);
+				return -1;
+			}
+			return 0;
 		}
 
 		#region Send
@@ -86,6 +96,15 @@ namespace _04_Chatting_Client_01
 
 			return offset;
 		}
+		private Int32 stringToCypherPacket(byte[] buffer, int offset, string str, byte[] key)
+		{
+			byte[] buffer_plain = Encoding.ASCII.GetBytes(str);
+			byte[] buffer_cypher = Rijndael.Encrypt(buffer_plain, 0, buffer_plain.Length, key);
+			Array.Copy(buffer_cypher, 0, buffer, offset, buffer_cypher.Length);
+			offset += buffer_cypher.Length;
+
+			return offset;
+		}
 		private Int32 valueToPacket(byte[] buffer, int offset, Int32 value, int size)
 		{
 			Array.Copy(BitConverter.GetBytes(value), 0, buffer, offset, size);
@@ -119,7 +138,7 @@ namespace _04_Chatting_Client_01
 			// send
 			sendBuffer(buffer, 0, idx_buffer);
 		}
-		public void sendCreateRoom(string room_subject)
+		public void sendCreateRoom(string room_subject, bool is_secret)
 		{
 			byte[] buffer = new byte[Macro.SIZE_BUFFER];
 			int idx_buffer = 0;
@@ -132,7 +151,10 @@ namespace _04_Chatting_Client_01
 			idx_buffer = stringToPacket(buffer, idx_buffer, UserData.ud.id, Macro.SIZE_ID);
 
 			// room is_secret
-			idx_buffer = stringToPacket(buffer, idx_buffer, "N", 1);
+			if (is_secret)
+				buffer[idx_buffer++] = Macro.ROOM_INFO_STATUS_SECRET;
+			else
+				buffer[idx_buffer++] = Macro.ROOM_INFO_STATUS_NORMAL;
 
 			// room subject
 			idx_buffer = stringToPacket(buffer, idx_buffer, room_subject, Macro.SIZE_ROOM_SUBJECT);
@@ -237,7 +259,7 @@ namespace _04_Chatting_Client_01
 
 			sendBuffer(buffer, 0, idx_buffer);
 		}
-		public void sendChattingMessage(Int32 room_number, string message)
+		public void sendChattingMessage(MyRoom my_room, string message)
 		{
 			byte[] buffer = new byte[Macro.SIZE_BUFFER];
 			int idx_buffer = 0;
@@ -250,10 +272,13 @@ namespace _04_Chatting_Client_01
 			idx_buffer = stringToPacket(buffer, idx_buffer, UserData.ud.id, Macro.SIZE_ID);
 
 			// room number
-			idx_buffer = valueToPacket(buffer, idx_buffer, room_number, 4);
+			idx_buffer = valueToPacket(buffer, idx_buffer, my_room.room_number, 4);
 
 			// message
-			idx_buffer = stringToPacket(buffer, idx_buffer, message, Encoding.ASCII.GetByteCount(message));
+			if (my_room.Status == Macro.ROOM_INFO_STATUS_NORMAL)
+				idx_buffer = stringToPacket(buffer, idx_buffer, message, Encoding.ASCII.GetByteCount(message));
+			else if (my_room.Status == Macro.ROOM_INFO_STATUS_SECRET)
+				idx_buffer = stringToCypherPacket(buffer, idx_buffer, message, my_room.secret_key);
 
 			// length
 			valueToPacket(buffer, Macro.SIZE_CMD, idx_buffer, Macro.SIZE_PACKET_LENGTH);
@@ -263,163 +288,17 @@ namespace _04_Chatting_Client_01
 		#endregion
 
 		#region Recv
-		private int recvBuffer(byte[] buffer, int offset, int size)
+
+		private void recvTimerTick(object sender, EventArgs e)
 		{
-			int retval = 0;
 			try
 			{
-				retval = m_sock.Receive(buffer, offset, size, 0);
+				recvProcess();
 			}
 			catch (SocketException ex)
 			{
-				if (ex.SocketErrorCode == SocketError.WouldBlock ||
-					ex.SocketErrorCode == SocketError.IOPending ||
-					ex.SocketErrorCode == SocketError.NoBufferSpaceAvailable)
-				{
-					;
-				}
-				else
-					throw ex;  // any serious error occurr
-			}
-
-			return retval;
-		}
-		
-		private void cmdCreateId(byte[] packet, int size_packet)
-		{
-			WindowRoomList wnd_room_list = new WindowRoomList(
-				//id
-				Encoding.ASCII.GetString(packet, Macro.SIZE_HEADER, Macro.SIZE_ID));
-			wnd_room_list.Show();
-			MainWindow.wnd.Close();
-		}
-		private void cmdCreateRoom(byte[] packet, int size_packet)
-		{
-			byte[] key = new byte[Macro.SIZE_SECRET_KEY];
-			Array.Copy(packet, Macro.SIZE_HEADER + Macro.SIZE_ID + 4, key, 0, Macro.SIZE_SECRET_KEY);
-
-			//m_list_myroom.Add(new MyRoomList(BitConverter.ToInt32(m_buffer_recv, Macro.SIZE_HEADER + Macro.SIZE_ID), 'N', "test", key));
-		}
-		private void cmdEnterRoom(byte[] packet, int size_packet)
-		{
-			int idx = 0;
-
-			idx = Macro.SIZE_HEADER + Macro.SIZE_ID;
-			WindowRoomList.wnd.addButtonMyList(
-				// room number
-				BitConverter.ToInt32(packet, idx),
-				// status
-				packet[idx + 4],
-				// room subject
-				Encoding.ASCII.GetString(packet, idx + 5, Macro.SIZE_ROOM_SUBJECT),
-				// key
-				null,
-				// chat
-				"");
-
-			sendViewRoom(BitConverter.ToInt32(packet, idx));
-		}
-		private void cmdLeaveRoom(byte[] packet, int size_packet)
-		{
-			int room_number = BitConverter.ToInt32(packet, Macro.SIZE_HEADER + Macro.SIZE_ID);
-			MyRoom my_room = UserData.ud.dic_my_rooms[room_number];
-
-			if(my_room != null)
-			{
-				WindowRoomList.wnd.delButtonMyList(my_room.btn);
-				UserData.ud.dic_my_rooms.Remove(room_number);
-			}
-		}
-		private void cmdViewRoom(byte[] packet, int size_packet)
-		{
-			int room_number = BitConverter.ToInt32(packet, Macro.SIZE_HEADER + Macro.SIZE_ID);
-			MyRoom my_room = UserData.ud.dic_my_rooms[room_number];
-
-			if (my_room != null)
-			{
-				if (my_room.wnd == null)
-				{
-					my_room.addLogChatting(
-						// log chatting
-						Encoding.ASCII.GetString(packet, Macro.SIZE_HEADER + Macro.SIZE_ID + 4, size_packet - (Macro.SIZE_HEADER + Macro.SIZE_ID + 4)));
-
-					new WindowChatting(my_room).Show();
-				}
-				else
-				{
-					my_room.wnd.Focus();
-				}
-			}
-		}
-		private void cmdTotalRoomList(byte[] packet, int size_packet)
-		{
-			int idx;
-			
-			int room_number;
-			string subject;
-
-			idx = Macro.SIZE_HEADER + Macro.SIZE_ID;
-
-			while (idx < size_packet)
-			{
-				room_number = BitConverter.ToInt32(m_buffer_recv, idx);
-				subject = Encoding.ASCII.GetString(m_buffer_recv, idx + 5, Macro.SIZE_ROOM_SUBJECT);
-
-				if (UserData.ud.dic_total_rooms[room_number] == null)
-				{
-					Button btn = WindowRoomList.wnd.addButtonTotalList(room_number, subject);
-					UserData.ud.dic_total_rooms[room_number] = new TotalRoom(room_number, subject);
-				}
-
-				idx += 5 + Macro.SIZE_ROOM_SUBJECT;
-			}
-		}
-		private void cmdMyRoomList(byte[] packet, int size_packet)
-		{
-			int idx;
-
-			int room_number;
-			byte status;
-			string subject;
-			byte[] key;
-			string chat;
-
-			idx = Macro.SIZE_HEADER + Macro.SIZE_ID;
-
-			while (idx < size_packet)
-			{
-				room_number = BitConverter.ToInt32(m_buffer_recv, idx);
-				status = m_buffer_recv[idx + 4];
-				subject = Encoding.ASCII.GetString(m_buffer_recv, idx + 5, Macro.SIZE_ROOM_SUBJECT);
-				key = null;
-				chat = "";
-				if (UserData.ud.dic_my_rooms[room_number] == null)
-				{
-					Button btn = WindowRoomList.wnd.addButtonMyList(
-									room_number, status, subject, key, chat);
-					UserData.ud.dic_my_rooms[room_number] = new MyRoom(
-									room_number, status, subject, key, chat, btn);
-				}
-				idx += 5 + Macro.SIZE_ROOM_SUBJECT;
-			}
-		}
-		private void cmdChattingMessage(byte[] packet, int size_packet)
-		{
-			int room_number = BitConverter.ToInt32(packet, Macro.SIZE_HEADER + Macro.SIZE_ID);
-			MyRoom my_room = UserData.ud.dic_my_rooms[room_number];
-
-			if (my_room != null)
-			{
-				my_room.addLogChatting(
-					// id
-					Encoding.ASCII.GetString(packet, Macro.SIZE_HEADER, Macro.SIZE_ID),
-					// message
-					Encoding.ASCII.GetString(packet, Macro.SIZE_HEADER + Macro.SIZE_ID + 4, size_packet - (Macro.SIZE_HEADER + Macro.SIZE_ID + 4)));
-
-				if (my_room.wnd != null)
-				{
-					my_room.wnd.updateChat();
-				}
+				DebugLog.debugLog(ex.ToString(), null, 0);
+				m_recv_Timer.Stop();
 			}
 		}
 		private void recvProcess()
@@ -432,7 +311,7 @@ namespace _04_Chatting_Client_01
 			while (m_cnt_recv >= Macro.SIZE_HEADER
 				&& m_cnt_recv >= (size_packet = BitConverter.ToInt32(m_buffer_recv, Macro.SIZE_CMD)))
 			{
-				DebugLog.debugLog("Recv", m_buffer_recv, size_packet);
+				DebugLog.debugLog("Recv [" + m_cnt_recv + "]", m_buffer_recv, size_packet);
 
 
 				switch (BitConverter.ToUInt16(m_buffer_recv, 0))
@@ -470,6 +349,195 @@ namespace _04_Chatting_Client_01
 				Array.Copy(m_buffer_recv, size_packet, m_buffer_recv, 0, m_cnt_recv);
 			}
 		}
+
+		private int recvBuffer(byte[] buffer, int offset, int size)
+		{
+			int retval = 0;
+			try
+			{
+				retval = m_sock.Receive(buffer, offset, size, 0);
+			}
+			catch (SocketException ex)
+			{
+				if (ex.SocketErrorCode == SocketError.WouldBlock ||
+					ex.SocketErrorCode == SocketError.IOPending ||
+					ex.SocketErrorCode == SocketError.NoBufferSpaceAvailable)
+				{
+					;
+				}
+				else
+				{
+					throw ex;  // any serious error occurr
+				}
+			}
+
+			return retval;
+		}
+		private void cmdCreateId(byte[] packet, int size_packet)
+		{
+			WindowRoomList wnd_room_list = new WindowRoomList(
+				//id
+				Encoding.ASCII.GetString(packet, Macro.SIZE_HEADER, Macro.SIZE_ID));
+			wnd_room_list.Show();
+			MainWindow.wnd.Close();
+		}
+		private void cmdCreateRoom(byte[] packet, int size_packet)
+		{
+			int idx = Macro.SIZE_HEADER + Macro.SIZE_ID;
+			int room_number = BitConverter.ToInt32(packet, idx);
+			byte status = packet[idx + 4];
+			string subject = Encoding.ASCII.GetString(packet, idx + 4 + 1, Macro.SIZE_ROOM_SUBJECT);
+			byte[] key = new byte[Macro.SIZE_SECRET_KEY];
+			Array.Copy(packet, idx + 4 + 1 + Macro.SIZE_ROOM_SUBJECT, key, 0, Macro.SIZE_SECRET_KEY);
+			string chat = "";
+
+			UserData.ud.addTotalRoom(room_number, status, subject);
+			UserData.ud.addMyRoom(room_number, status, subject, key, chat);
+
+			sendViewRoom(BitConverter.ToInt32(packet, idx));
+		}
+		private void cmdEnterRoom(byte[] packet, int size_packet)
+		{
+			int idx = Macro.SIZE_HEADER + Macro.SIZE_ID;
+			int room_number = BitConverter.ToInt32(packet, idx);
+			byte status = packet[idx + 4];
+			string room_subject = Encoding.ASCII.GetString(packet, idx + 4 + 1, Macro.SIZE_ROOM_SUBJECT);
+			byte[] key = new byte[Macro.SIZE_SECRET_KEY];
+			Array.Copy(packet, idx + 4 + 1 + Macro.SIZE_ROOM_SUBJECT, key, 0, Macro.SIZE_SECRET_KEY);
+			string chat = "";
+
+			UserData.ud.addMyRoom(room_number, status, room_subject, key, chat);
+
+			sendViewRoom(BitConverter.ToInt32(packet, idx));
+		}
+		private void cmdLeaveRoom(byte[] packet, int size_packet)
+		{
+			int room_number = BitConverter.ToInt32(packet, Macro.SIZE_HEADER + Macro.SIZE_ID);
+
+			UserData.ud.delMyRoom(room_number);
+		}
+		private void cmdViewRoom(byte[] packet, int size_packet)
+		{
+			int room_number = BitConverter.ToInt32(packet, Macro.SIZE_HEADER + Macro.SIZE_ID);
+
+			MyRoom my_room = UserData.ud.findMyRoom(room_number);
+
+			if (my_room == null)
+				return;
+
+			if (my_room.wnd != null)
+			{
+				my_room.wnd.Focus();
+				return;
+			}
+
+			if (my_room.Status == Macro.ROOM_INFO_STATUS_SECRET)
+			{
+				byte[] buffer_plain = Rijndael.Decrypt(
+										packet,
+										Macro.SIZE_HEADER + Macro.SIZE_ID + 4,
+										size_packet - (Macro.SIZE_HEADER + Macro.SIZE_ID + 4),
+										my_room.secret_key
+										);
+
+				my_room.setLogChatting(
+					// log chatting
+					Encoding.ASCII.GetString(buffer_plain, 0, buffer_plain.Length)
+					);
+			}
+			else
+			{
+				my_room.setLogChatting(
+					// log chatting
+					Encoding.ASCII.GetString(packet, Macro.SIZE_HEADER + Macro.SIZE_ID + 4, size_packet - (Macro.SIZE_HEADER + Macro.SIZE_ID + 4))
+					);
+			}
+			new WindowChatting(my_room).Show();
+		}
+		private void cmdTotalRoomList(byte[] packet, int size_packet)
+		{
+			int idx;
+			
+			int room_number;
+			byte status;
+			string subject;
+
+			idx = Macro.SIZE_HEADER + Macro.SIZE_ID;
+			UserData.ud.clearTotalRoom();
+			while (idx < size_packet)
+			{
+				room_number = BitConverter.ToInt32(m_buffer_recv, idx);
+				status = m_buffer_recv[idx + 4];
+				subject = Encoding.ASCII.GetString(m_buffer_recv, idx + 4 + 1, Macro.SIZE_ROOM_SUBJECT);
+				idx += 5 + Macro.SIZE_ROOM_SUBJECT;
+
+				UserData.ud.addTotalRoom(room_number, status, subject);
+			}
+		}
+		private void cmdMyRoomList(byte[] packet, int size_packet)
+		{
+			int idx;
+
+			int room_number;
+			byte status;
+			string subject;
+			byte[] key = new byte[Macro.SIZE_SECRET_KEY];
+			string chat;
+
+			idx = Macro.SIZE_HEADER + Macro.SIZE_ID;
+
+			while (idx < size_packet)
+			{
+				room_number = BitConverter.ToInt32(m_buffer_recv, idx);
+				status = m_buffer_recv[idx + 4];
+				subject = Encoding.ASCII.GetString(m_buffer_recv, idx + 4 + 1, Macro.SIZE_ROOM_SUBJECT);
+				Array.Copy(packet, idx + 4 + 1 + Macro.SIZE_ROOM_SUBJECT, key, 0, Macro.SIZE_SECRET_KEY);
+				chat = "";
+				idx += 5 + Macro.SIZE_ROOM_SUBJECT;
+
+				UserData.ud.addMyRoom(room_number, status, subject, key, chat);
+			}
+		}
+		private void cmdChattingMessage(byte[] packet, int size_packet)
+		{
+			int room_number = BitConverter.ToInt32(packet, Macro.SIZE_HEADER + Macro.SIZE_ID);
+
+			MyRoom my_room = UserData.ud.findMyRoom(room_number);
+
+			if (my_room == null)
+				return;
+
+			if (my_room.Status == Macro.ROOM_INFO_STATUS_SECRET)
+			{
+				byte[] buffer_plain = Rijndael.Decrypt(
+											packet, 
+											Macro.SIZE_HEADER + Macro.SIZE_ID + 4, 
+											size_packet - (Macro.SIZE_HEADER + Macro.SIZE_ID + 4), my_room.secret_key
+											);
+
+
+				my_room.addLogChatting(
+					// message
+					Encoding.ASCII.GetString(buffer_plain, 0, buffer_plain.Length)
+					);
+			}
+			else if (my_room.Status == Macro.ROOM_INFO_STATUS_NORMAL)
+			{
+				my_room.addLogChatting(
+					// message
+					Encoding.ASCII.GetString(
+						packet, 
+						Macro.SIZE_HEADER + Macro.SIZE_ID + 4, 
+						size_packet - (Macro.SIZE_HEADER + Macro.SIZE_ID + 4))
+					);
+			}
+
+			if (my_room.wnd != null)
+			{
+				my_room.wnd.updateChat();
+			}
+		}
+		
 		#endregion
 		
 	}

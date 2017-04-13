@@ -34,10 +34,17 @@ namespace _04_Chatting_Client_01
 			InitializeComponent();
 			new UserData(id);
 			this.Loaded += WindowRoomList_Loaded;
+			button_createRoom.Click += Button_createRoom_Click;
 
 			m_Timer.Start();
 			MyNetwork.net.sendTotalRoomList();
 			MyNetwork.net.sendMyRoomList();
+		}
+
+		private void Button_createRoom_Click(object sender, RoutedEventArgs e)
+		{
+			WindowCreateRoom wnd = new WindowCreateRoom();
+			wnd.ShowDialog();
 		}
 
 		private void WindowRoomList_Loaded(object sender, RoutedEventArgs e)
@@ -49,23 +56,34 @@ namespace _04_Chatting_Client_01
 
 		private void Timer_Tick(object sender, EventArgs e)
 		{
-			//sendTotalRoomList();
+			//MyNetwork.net.sendTotalRoomList();
 		}
 
 
-		public Button addButtonTotalList(int room_number, string subject)
+		public Button addButtonTotalList(int room_number, byte status, string subject)
 		{
 			Button newBtn = new Button();
 
 			newBtn.Content = subject;
 			newBtn.Name = "Button_" + room_number;
-			newBtn.Background = Brushes.White;
-			newBtn.BorderBrush = Brushes.YellowGreen;
 			newBtn.Height = 50;
+			if (status == Macro.ROOM_INFO_STATUS_SECRET)
+			{
+				newBtn.Background = Brushes.LightPink;
+				newBtn.BorderBrush = Brushes.Red;
+			}
+			else if (status == Macro.ROOM_INFO_STATUS_NORMAL)
+			{
+				newBtn.Background = null;
+				newBtn.BorderBrush = Brushes.YellowGreen;
+			}
 			newBtn.Margin = new Thickness(0, 5, 0, 0);
 			newBtn.Click += delegate (object sender, RoutedEventArgs e)
 			{
-				MyNetwork.net.sendEnterRoom(room_number);
+				if(UserData.ud.findMyRoom(room_number) == null)
+					MyNetwork.net.sendEnterRoom(room_number);
+				else
+					MyNetwork.net.sendViewRoom(room_number);
 			};
 
 			stackPanel_totallist.Children.Add(newBtn);
@@ -77,42 +95,58 @@ namespace _04_Chatting_Client_01
 			stackPanel_totallist.Children.Remove(btn);
 		}
 
-		public Button addButtonMyList(int room_number, byte status, string subject, byte[] key, string chat)
+		public Grid addGridMyList(int room_number, byte status, string subject, byte[] key, string chat)
 		{
+			Grid newGrid = new Grid();
+			newGrid.Height = 50;
+			newGrid.Margin = new Thickness(0, 5, 0, 0);
+
 			Button newBtn = new Button();
 
 			newBtn.Content = subject;
 			newBtn.Name = "Button_" + room_number;
-			newBtn.Background = Brushes.White;
-			newBtn.BorderBrush = Brushes.YellowGreen;
-			newBtn.Height = 50;
-			newBtn.Margin = new Thickness(0, 5, 0, 0);
+
+			if (status == Macro.ROOM_INFO_STATUS_SECRET)
+			{
+				newBtn.Background = Brushes.LightPink;
+				newBtn.BorderBrush = Brushes.Red;
+			}
+			else if(status == Macro.ROOM_INFO_STATUS_NORMAL)
+			{
+				newBtn.Background = null;
+				newBtn.BorderBrush = Brushes.YellowGreen;
+			}
+			
+
+			newBtn.Margin = new Thickness(0, 0, 0, 0);
 			newBtn.Click += delegate (object sender, RoutedEventArgs e)
 			{
 				MyNetwork.net.sendViewRoom(room_number);
 			};
 
-			stackPanel_mylist.Children.Add(newBtn);
+			newGrid.Children.Add(newBtn);
 
-			return newBtn;
-			//Button closeBtn = new Button();
+			Button closeBtn = new Button();
 
-			//closeBtn.Content = subject;
-			//closeBtn.Name = "Button_" + room_number;
-			//closeBtn.Background = Brushes.White;
-			//closeBtn.BorderBrush = Brushes.YellowGreen;
+			closeBtn.Content = "X";
+			closeBtn.Background = Brushes.White;
+			closeBtn.BorderBrush = Brushes.PaleVioletRed;
 			//closeBtn.Height = 50;
-			//closeBtn.Margin = new Thickness(0, 5, 0, 0);
-			//closeBtn.Click += delegate (object sender, RoutedEventArgs e)
-			//{
-			//	MyNetwork.net.sendViewRoom(room_number);
-			//};
+			closeBtn.Margin = new Thickness(250, 5, 5, 25);
+			closeBtn.Click += delegate (object sender, RoutedEventArgs e)
+			{
+				MyNetwork.net.sendLeaveRoom(room_number);
+			};
 
-			//stackPanel_mylist.Children.Add(closeBtn);
+			newGrid.Children.Add(closeBtn);
+
+			stackPanel_mylist.Children.Add(newGrid);
+
+			return newGrid;
 		}
-		public void delButtonMyList(Button btn)
+		public void delButtonMyList(Grid grd)
 		{
-			stackPanel_mylist.Children.Remove(btn);
+			stackPanel_mylist.Children.Remove(grd);
 		}
 	}
 }

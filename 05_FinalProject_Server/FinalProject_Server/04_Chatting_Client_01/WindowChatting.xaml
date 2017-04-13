@@ -6,9 +6,18 @@
         xmlns:local="clr-namespace:_04_Chatting_Client_01"
         mc:Ignorable="d"
         Title="WindowChatting" Height="500" Width="300">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="MyBoolToVisibilityConverter" />
+    </Window.Resources>
     <Grid>
-        <TextBlock x:Name="textBlock_chat" TextWrapping="Wrap" Text="TextBlck" Margin="10,10,10,100"/>
-        <TextBox x:Name="textBox_input" Height="90" Margin="10,0,10,5" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Bottom"/>
+        <Grid Margin="10,10,10,100">
+            <ScrollViewer IsTabStop="True" VerticalScrollBarVisibility="Auto" local:ScrollViewerExtensions.AlwaysScrollToEnd="True" >
+                <TextBlock x:Name="textBlock_chat" TextWrapping="Wrap"/>
+            </ScrollViewer>
+        </Grid>
+        <TextBlock Height="90" Margin="10,0,10,5" VerticalAlignment="Bottom" Text="Input Your Message" FontSize="20" 
+                   Foreground="LightSteelBlue" Visibility="{Binding ElementName=textBox_subject, Path=Text.IsEmpty, Converter={StaticResource MyBoolToVisibilityConverter}}" FontStyle="Italic" TextDecorations="{x:Null}" />
+        <TextBox x:Name="textBox_input" Height="90" Margin="10,0,10,5" TextWrapping="Wrap" VerticalAlignment="Bottom" Background="{x:Null}"/>
 
     </Grid>
 </Window>

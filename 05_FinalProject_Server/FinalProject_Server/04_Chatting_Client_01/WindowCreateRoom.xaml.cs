@@ -22,6 +22,32 @@ namespace _04_Chatting_Client_01
 		public WindowCreateRoom()
 		{
 			InitializeComponent();
+			textBox_subject.KeyDown += TextBox_subject_KeyDown;
+			button_ok.Click += Button_ok_Click;
+
+			textBox_subject.Focus();
+		}
+
+		private void TextBox_subject_KeyDown(object sender, KeyEventArgs e)
+		{
+			if(e.Key == Key.Enter)
+			{
+				createRoom();
+			}
+		}
+
+		private void Button_ok_Click(object sender, RoutedEventArgs e)
+		{
+			createRoom();
+		}
+
+		private void createRoom()
+		{
+			if (textBox_subject.Text.Length < 1)
+				return;
+
+			MyNetwork.net.sendCreateRoom(textBox_subject.Text, checkBox_secret.IsChecked.Value);
+			this.Close();
 		}
 	}
 }

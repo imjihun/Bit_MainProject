@@ -5,8 +5,20 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:_04_Chatting_Client_01"
         mc:Ignorable="d"
-        Title="WindowCreateRoom" Height="300" Width="300">
+        Title="WindowCreateRoom" Height="200" Width="300">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="MyBoolToVisibilityConverter" />
+    </Window.Resources>
     <Grid>
-        
+        <TextBlock Margin="10,0,10,50" Text="Input Room Subject" FontSize="20" 
+                   Foreground="LightSteelBlue" Visibility="{Binding ElementName=textBox_subject, Path=Text.IsEmpty, Converter={StaticResource MyBoolToVisibilityConverter}}" FontStyle="Italic" TextDecorations="{x:Null}" Height="35" />
+        <TextBox x:Name="textBox_subject" Height="35" Margin="10,0,10,50" TextWrapping="Wrap" FontSize="20" AutomationProperties.HelpText="Input Your Name" Background="{x:Null}"/>
+        <CheckBox x:Name="checkBox_secret" Content="You Want Secret?" Margin="20,80,20,50" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <CheckBox.LayoutTransform>
+                <ScaleTransform ScaleX="2" ScaleY="2" />
+            </CheckBox.LayoutTransform>
+        </CheckBox>
+        <Button x:Name="button_ok" Content="Ok" Margin="100,120,100,10" FontSize="20" Background="White"/>
+
     </Grid>
 </Window>

@@ -15,9 +15,22 @@
 
         </Grid.RowDefinitions>
         <TextBlock Grid.Column="0" Height="35" VerticalAlignment="Top" Margin="0,0,0,5" Text="전체 방" FontSize="20" HorizontalAlignment="Center" />
+        <Button x:Name="button_createRoom" Content="방만들기" Margin="10,0,200,0" VerticalAlignment="Top" Height="30" FontSize="20" Background="#FFFDF4FF" BorderBrush="#FF6A0081"/>
         <TextBlock Grid.Column="1" Height="35" VerticalAlignment="Top" Margin="0,0,0,5" Text="내 방" FontSize="20" HorizontalAlignment="Center" />
-        <StackPanel Grid.Column="0" x:Name="stackPanel_totallist" Margin="10,50"/>
-        <StackPanel Grid.Column="1" x:Name="stackPanel_mylist" Margin="10,50"/>
-        <TextBlock Grid.Column="0" Grid.ColumnSpan="2" x:Name="textBlock_status" Height="35" Margin="10,0,10,5" TextWrapping="Wrap" Text="status bar" FontSize="20" VerticalAlignment="Bottom"/>
+
+        <Grid Grid.Column="0" Margin="10,50">
+            <!--<ScrollViewer IsTabStop="True" VerticalScrollBarVisibility="Auto" local:ScrollViewerExtensions.AlwaysScrollToEnd="True" >-->
+            <ScrollViewer IsTabStop="True" VerticalScrollBarVisibility="Auto" >
+                    <StackPanel x:Name="stackPanel_totallist"/>
+            </ScrollViewer>
+        </Grid>
+
+        <Grid Grid.Column="1" Margin="10,50">
+            <!--<ScrollViewer IsTabStop="True" VerticalScrollBarVisibility="Auto" local:ScrollViewerExtensions.AlwaysScrollToEnd="True" >-->
+            <ScrollViewer IsTabStop="True" VerticalScrollBarVisibility="Auto" >
+                    <StackPanel x:Name="stackPanel_mylist"/>
+            </ScrollViewer>
+        </Grid>
+        <TextBlock Grid.Column="0" Grid.ColumnSpan="2" x:Name="textBlock_status" Height="35" Margin="10,0,10,5" TextWrapping="Wrap" FontSize="20" VerticalAlignment="Bottom"/>
     </Grid>
 </Window>

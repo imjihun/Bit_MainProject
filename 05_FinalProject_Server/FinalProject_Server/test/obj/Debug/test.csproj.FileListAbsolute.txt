@@ -1,0 +1,6 @@
+D:\git\Bit_MainProject\05_FinalProject_Server\FinalProject_Server\test\bin\Debug\test.exe.config
+D:\git\Bit_MainProject\05_FinalProject_Server\FinalProject_Server\test\bin\Debug\test.exe
+D:\git\Bit_MainProject\05_FinalProject_Server\FinalProject_Server\test\bin\Debug\test.pdb
+D:\git\Bit_MainProject\05_FinalProject_Server\FinalProject_Server\test\obj\Debug\test.csprojResolveAssemblyReference.cache
+D:\git\Bit_MainProject\05_FinalProject_Server\FinalProject_Server\test\obj\Debug\test.exe
+D:\git\Bit_MainProject\05_FinalProject_Server\FinalProject_Server\test\obj\Debug\test.pdb

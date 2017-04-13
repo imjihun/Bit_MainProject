@@ -11,10 +11,13 @@ namespace _04_Chatting_Client_01
 		public static void debugLog(string str, byte[] buffer, int size)
 		{
 			Console.Write("[" + str + "] ");
-			Console.Write("[buffer = ");
-			for (int i = 0; i < size; i++)
-				Console.Write(string.Format("{0:X2} ", buffer[i]));
-			Console.WriteLine("]");
+			if (buffer != null)
+			{
+				Console.Write("[buffer [" + size + "] = ");
+				for (int i = 0; i < size; i++)
+					Console.Write(string.Format("{0:X2} ", buffer[i]));
+				Console.WriteLine("]");
+			}
 		}
 	}
 }

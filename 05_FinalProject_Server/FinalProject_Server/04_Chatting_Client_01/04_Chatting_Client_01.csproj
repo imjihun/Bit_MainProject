@@ -61,6 +61,7 @@
     <Compile Include="DebugLog.cs" />
     <Compile Include="Macro.cs" />
     <Compile Include="MyNetwork.cs" />
+    <Compile Include="Rijndael.cs" />
     <Compile Include="UserData.cs" />
     <Compile Include="WindowChatting.xaml.cs">
       <DependentUpon>WindowChatting.xaml</DependentUpon>
