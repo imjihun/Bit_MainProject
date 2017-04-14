@@ -32,7 +32,13 @@ namespace _04_Chatting_Client_01
 			textBox_input.KeyDown += TextBox_input_KeyDown;
 
 			my_room.wnd = this;
+			this.Loaded += WindowChatting_Loaded;
 			this.Closed += WindowChatting_Closed;
+		}
+
+		private void WindowChatting_Loaded(object sender, RoutedEventArgs e)
+		{
+			this.Title = "[ " + my_room.Count_member + " ] " + my_room.Subject;
 		}
 
 		private void WindowChatting_Closed(object sender, EventArgs e)

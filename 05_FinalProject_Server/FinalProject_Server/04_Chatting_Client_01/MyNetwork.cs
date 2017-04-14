@@ -99,7 +99,7 @@ namespace _04_Chatting_Client_01
 		private Int32 stringToCypherPacket(byte[] buffer, int offset, string str, byte[] key)
 		{
 			byte[] buffer_plain = Encoding.ASCII.GetBytes(str);
-			byte[] buffer_cypher = Rijndael.Encrypt(buffer_plain, 0, buffer_plain.Length, key);
+			byte[] buffer_cypher = Rijndael.aesCounter(buffer_plain, 0, buffer_plain.Length, key);
 			Array.Copy(buffer_cypher, 0, buffer, offset, buffer_cypher.Length);
 			offset += buffer_cypher.Length;
 
@@ -375,9 +375,12 @@ namespace _04_Chatting_Client_01
 		}
 		private void cmdCreateId(byte[] packet, int size_packet)
 		{
-			WindowRoomList wnd_room_list = new WindowRoomList(
-				//id
-				Encoding.ASCII.GetString(packet, Macro.SIZE_HEADER, Macro.SIZE_ID));
+			if (packet[Macro.SIZE_HEADER] == Macro.CMD_FAIL)
+				return;
+
+			string id = Encoding.ASCII.GetString(packet, Macro.SIZE_HEADER, Macro.SIZE_ID);
+
+			WindowRoomList wnd_room_list = new WindowRoomList(id);
 			wnd_room_list.Show();
 			MainWindow.wnd.Close();
 		}
@@ -392,29 +395,55 @@ namespace _04_Chatting_Client_01
 			string chat = "";
 
 			UserData.ud.addTotalRoom(room_number, status, subject);
-			UserData.ud.addMyRoom(room_number, status, subject, key, chat);
-
-			sendViewRoom(BitConverter.ToInt32(packet, idx));
+			UserData.ud.addMyRoom(room_number, status, subject, key, chat, 1);
+			sendViewRoom(room_number);
 		}
 		private void cmdEnterRoom(byte[] packet, int size_packet)
 		{
+			string id = Encoding.ASCII.GetString(packet, Macro.SIZE_HEADER, Macro.SIZE_ID);
 			int idx = Macro.SIZE_HEADER + Macro.SIZE_ID;
 			int room_number = BitConverter.ToInt32(packet, idx);
 			byte status = packet[idx + 4];
 			string room_subject = Encoding.ASCII.GetString(packet, idx + 4 + 1, Macro.SIZE_ROOM_SUBJECT);
 			byte[] key = new byte[Macro.SIZE_SECRET_KEY];
 			Array.Copy(packet, idx + 4 + 1 + Macro.SIZE_ROOM_SUBJECT, key, 0, Macro.SIZE_SECRET_KEY);
+			int count_member = BitConverter.ToInt32(packet, idx + 4 + 1 + Macro.SIZE_ROOM_SUBJECT + Macro.SIZE_SECRET_KEY);
 			string chat = "";
+			
+			if (id == UserData.ud.id)
+			{
+				UserData.ud.addMyRoom(room_number, status, room_subject, key, chat, count_member);
 
-			UserData.ud.addMyRoom(room_number, status, room_subject, key, chat);
+				sendViewRoom(BitConverter.ToInt32(packet, idx));
+			}
+			else
+			{
+				MyRoom room = UserData.ud.findMyRoom(room_number);
+				if (room != null)
+				{
+					room.Count_member++;
+				}
 
-			sendViewRoom(BitConverter.ToInt32(packet, idx));
+			}
 		}
 		private void cmdLeaveRoom(byte[] packet, int size_packet)
 		{
+			string id = Encoding.ASCII.GetString(packet, Macro.SIZE_HEADER, Macro.SIZE_ID);
 			int room_number = BitConverter.ToInt32(packet, Macro.SIZE_HEADER + Macro.SIZE_ID);
+			
+			if (id == UserData.ud.id)
+			{
+				UserData.ud.delMyRoom(room_number);
+			}
+			else
+			{
+				MyRoom room = UserData.ud.findMyRoom(room_number);
+				if (room != null)
+				{
+					room.Count_member--;
+				}
 
-			UserData.ud.delMyRoom(room_number);
+			}
 		}
 		private void cmdViewRoom(byte[] packet, int size_packet)
 		{
@@ -433,17 +462,20 @@ namespace _04_Chatting_Client_01
 
 			if (my_room.Status == Macro.ROOM_INFO_STATUS_SECRET)
 			{
-				byte[] buffer_plain = Rijndael.Decrypt(
+				byte[] buffer_plain = Rijndael.aesCounter(
 										packet,
 										Macro.SIZE_HEADER + Macro.SIZE_ID + 4,
 										size_packet - (Macro.SIZE_HEADER + Macro.SIZE_ID + 4),
 										my_room.secret_key
 										);
 
-				my_room.setLogChatting(
-					// log chatting
-					Encoding.ASCII.GetString(buffer_plain, 0, buffer_plain.Length)
-					);
+				if (buffer_plain != null)
+				{
+					my_room.setLogChatting(
+						// log chatting
+						Encoding.ASCII.GetString(buffer_plain, 0, buffer_plain.Length)
+						);
+				}
 			}
 			else
 			{
@@ -482,20 +514,26 @@ namespace _04_Chatting_Client_01
 			byte status;
 			string subject;
 			byte[] key = new byte[Macro.SIZE_SECRET_KEY];
-			string chat;
+			int count_member;
+			string chat = "";
 
 			idx = Macro.SIZE_HEADER + Macro.SIZE_ID;
 
 			while (idx < size_packet)
 			{
 				room_number = BitConverter.ToInt32(m_buffer_recv, idx);
-				status = m_buffer_recv[idx + 4];
-				subject = Encoding.ASCII.GetString(m_buffer_recv, idx + 4 + 1, Macro.SIZE_ROOM_SUBJECT);
-				Array.Copy(packet, idx + 4 + 1 + Macro.SIZE_ROOM_SUBJECT, key, 0, Macro.SIZE_SECRET_KEY);
-				chat = "";
-				idx += 5 + Macro.SIZE_ROOM_SUBJECT;
 
-				UserData.ud.addMyRoom(room_number, status, subject, key, chat);
+				status = m_buffer_recv[idx + 4];
+
+				subject = Encoding.ASCII.GetString(m_buffer_recv, idx + 4 + 1, Macro.SIZE_ROOM_SUBJECT);
+
+				Array.Copy(packet, idx + 4 + 1 + Macro.SIZE_ROOM_SUBJECT, key, 0, Macro.SIZE_SECRET_KEY);
+
+				count_member = BitConverter.ToInt32(packet, idx + 4 + 1 + Macro.SIZE_ROOM_SUBJECT + Macro.SIZE_SECRET_KEY);
+
+				idx += 5 + Macro.SIZE_ROOM_SUBJECT + Macro.SIZE_SECRET_KEY + 4;
+
+				UserData.ud.addMyRoom(room_number, status, subject, key, chat, count_member);
 			}
 		}
 		private void cmdChattingMessage(byte[] packet, int size_packet)
@@ -509,17 +547,19 @@ namespace _04_Chatting_Client_01
 
 			if (my_room.Status == Macro.ROOM_INFO_STATUS_SECRET)
 			{
-				byte[] buffer_plain = Rijndael.Decrypt(
+				byte[] buffer_plain = Rijndael.aesCounter(
 											packet, 
 											Macro.SIZE_HEADER + Macro.SIZE_ID + 4, 
 											size_packet - (Macro.SIZE_HEADER + Macro.SIZE_ID + 4), my_room.secret_key
 											);
 
-
-				my_room.addLogChatting(
-					// message
-					Encoding.ASCII.GetString(buffer_plain, 0, buffer_plain.Length)
-					);
+				if (buffer_plain != null)
+				{
+					my_room.addLogChatting(
+						// message
+						Encoding.ASCII.GetString(buffer_plain, 0, buffer_plain.Length)
+						);
+				}
 			}
 			else if (my_room.Status == Macro.ROOM_INFO_STATUS_NORMAL)
 			{

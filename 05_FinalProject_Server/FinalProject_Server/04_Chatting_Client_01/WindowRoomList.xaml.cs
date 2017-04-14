@@ -34,11 +34,24 @@ namespace _04_Chatting_Client_01
 			InitializeComponent();
 			new UserData(id);
 			this.Loaded += WindowRoomList_Loaded;
+			this.Closed += WindowRoomList_Closed;
 			button_createRoom.Click += Button_createRoom_Click;
 
 			m_Timer.Start();
 			MyNetwork.net.sendTotalRoomList();
 			MyNetwork.net.sendMyRoomList();
+		}
+
+		private void WindowRoomList_Closed(object sender, EventArgs e)
+		{
+			foreach (var v in UserData.ud.dic_my_rooms)
+			{
+				if (v.Value.wnd != null)
+				{
+					v.Value.wnd.Close();
+					v.Value.wnd = null;
+				}
+			}
 		}
 
 		private void Button_createRoom_Click(object sender, RoutedEventArgs e)

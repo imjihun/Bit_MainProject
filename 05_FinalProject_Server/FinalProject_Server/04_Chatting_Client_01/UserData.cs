@@ -29,18 +29,30 @@ namespace _04_Chatting_Client_01
 			}
 		}
 		public byte[] secret_key = new byte[Macro.SIZE_SECRET_KEY];
+		private int count_member = 0;
+		public int Count_member
+		{
+			get { return count_member; }
+			set
+			{
+				count_member = value;
+				this.wnd.Title = "[ " + count_member + " ] " + subject;
+				Console.WriteLine("count_member = " + count_member);
+			}
+		}
 		public StringBuilder log_chatting = new StringBuilder();
 		public Grid grd = null;
 
 		public WindowChatting wnd = null;
 
-		public MyRoom(int num, byte stat, string sub, byte[] key, string chat)
+		public MyRoom(int num, byte stat, string sub, byte[] key, int cnt_mem, string chat)
 		{
 			room_number = num;
 			status = stat;
 			subject = sub;
 			if(key != null)
 				Array.Copy(key, secret_key, Macro.SIZE_SECRET_KEY);
+			count_member = cnt_mem;
 			log_chatting.Append(chat);
 			grd = WindowRoomList.wnd.addGridMyList(
 							room_number, status, subject, key, chat);
@@ -109,12 +121,12 @@ namespace _04_Chatting_Client_01
 			id = _id;
 		}
 
-		public int addMyRoom(int room_number, byte status, string subject, byte[] key, string chat)
+		public int addMyRoom(int room_number, byte status, string subject, byte[] key, string chat, int count_member)
 		{
 			if (!UserData.ud.dic_my_rooms.ContainsKey(room_number))
 			{
 				UserData.ud.dic_my_rooms[room_number] = new MyRoom(
-								room_number, status, subject, key, chat);
+								room_number, status, subject, key, count_member, chat);
 				return 0;
 			}
 			else
@@ -123,6 +135,7 @@ namespace _04_Chatting_Client_01
 				UserData.ud.dic_my_rooms[room_number].Subject = subject;
 				Array.Copy(UserData.ud.dic_my_rooms[room_number].secret_key, key, Macro.SIZE_SECRET_KEY);
 				UserData.ud.dic_my_rooms[room_number].setLogChatting(chat);
+				UserData.ud.dic_my_rooms[room_number].Count_member = count_member;
 			}
 			return -1;
 		}
@@ -135,6 +148,8 @@ namespace _04_Chatting_Client_01
 
 			if (my_room != null)
 			{
+				if(my_room.wnd != null)
+					my_room.wnd.Close();
 				WindowRoomList.wnd.delButtonMyList(my_room.grd);
 				UserData.ud.dic_my_rooms.Remove(room_number);
 				return 0;

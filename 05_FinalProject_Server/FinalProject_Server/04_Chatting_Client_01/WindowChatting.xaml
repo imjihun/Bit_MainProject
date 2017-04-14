@@ -16,7 +16,7 @@
             </ScrollViewer>
         </Grid>
         <TextBlock Height="90" Margin="10,0,10,5" VerticalAlignment="Bottom" Text="Input Your Message" FontSize="20" 
-                   Foreground="LightSteelBlue" Visibility="{Binding ElementName=textBox_subject, Path=Text.IsEmpty, Converter={StaticResource MyBoolToVisibilityConverter}}" FontStyle="Italic" TextDecorations="{x:Null}" />
+                   Foreground="LightSteelBlue" Visibility="{Binding ElementName=textBox_input, Path=Text.IsEmpty, Converter={StaticResource MyBoolToVisibilityConverter}}" FontStyle="Italic" TextDecorations="{x:Null}" />
         <TextBox x:Name="textBox_input" Height="90" Margin="10,0,10,5" TextWrapping="Wrap" VerticalAlignment="Bottom" Background="{x:Null}"/>
 
     </Grid>
