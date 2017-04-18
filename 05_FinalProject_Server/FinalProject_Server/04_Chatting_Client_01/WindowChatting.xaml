@@ -9,10 +9,12 @@
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="MyBoolToVisibilityConverter" />
     </Window.Resources>
-    <Grid>
-        <Grid Margin="10,10,10,100">
+    <Grid x:Name="mygrid" Background="White" >
+        <Button x:Name="button_invite" Margin="5,5,5,5" Content="Invite" HorizontalAlignment="Right" VerticalAlignment="Top" Height="40" Width="60" Background="{x:Null}" BorderBrush="#FF808D00" FontSize="16"/>
+        <TextBlock x:Name="textBlock_title" Margin="10,5,70,5" VerticalAlignment="Top" Height="40" TextWrapping="Wrap" />
+        <Grid Margin="10,50,10,100" Background="#FF5F6800">
             <ScrollViewer IsTabStop="True" VerticalScrollBarVisibility="Auto" local:ScrollViewerExtensions.AlwaysScrollToEnd="True" >
-                <TextBlock x:Name="textBlock_chat" TextWrapping="Wrap"/>
+                <TextBlock x:Name="textBlock_chat" Margin="1,1,1,1" TextWrapping="Wrap" Background="White"/>
             </ScrollViewer>
         </Grid>
         <TextBlock Height="90" Margin="10,0,10,5" VerticalAlignment="Bottom" Text="Input Your Message" FontSize="20" 

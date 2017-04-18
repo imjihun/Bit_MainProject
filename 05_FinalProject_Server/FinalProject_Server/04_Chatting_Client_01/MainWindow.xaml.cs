@@ -36,7 +36,6 @@ namespace _04_Chatting_Client_01
 
 			textBox_id.Focus();
 
-			new MyNetwork();
 			
 		}
 		
@@ -45,11 +44,15 @@ namespace _04_Chatting_Client_01
 			if (e.Key != Key.Enter)
 				return;
 
-			if (textBox_id.Text.Length < 1 || textBox_id.Text.Length > 15)
+			if (textBox_id.Text.Length < 1 || textBox_id.Text.Length >= Macro.SIZE_ID)
 			{
 				textBox_id.Text = "";
 				return;
 			}
+
+			new MyNetwork();
+			if (MyNetwork.net == null)
+				return;
 
 			MyNetwork.net.sendCreateId(textBox_id.Text);
 			textBox_id.IsEnabled = false;

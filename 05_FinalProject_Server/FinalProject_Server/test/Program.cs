@@ -11,14 +11,17 @@ namespace test
 	{
 		static void Main(string[] args)
 		{
-			String originalText = "plain text";
-			String key = "key";
-			String en = Encrypt(originalText, key);
-			String de = Decrypt(en, key);
+			string str = "hi\0\0\0\0\0\0\0";
+			Console.WriteLine(str.TrimEnd('\0') + "end");
+			Console.WriteLine(str.Length);
+			//String originalText = "plain text";
+			//String key = "key";
+			//String en = Encrypt(originalText, key);
+			//String de = Decrypt(en, key);
 
-			Console.WriteLine("Original Text is " + originalText);
-			Console.WriteLine("Encrypted Text is " + en);
-			Console.WriteLine("Decrypted Text is " + de);
+			//Console.WriteLine("Original Text is " + originalText);
+			//Console.WriteLine("Encrypted Text is " + en);
+			//Console.WriteLine("Decrypted Text is " + de);
 		}
 
 		public static string Decrypt(string textToDecrypt, string key)

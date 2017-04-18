@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{9AC7F1C5-10F2-4B9A-AFAA-30A1C6484A53}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>_04_Chatting_Client_01</RootNamespace>
     <AssemblyName>04_Chatting_Client_01</AssemblyName>
@@ -72,6 +72,12 @@
     <Compile Include="WindowRoomList.xaml.cs">
       <DependentUpon>WindowRoomList.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Window_invited.xaml.cs">
+      <DependentUpon>Window_invited.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Window_inviting.xaml.cs">
+      <DependentUpon>Window_inviting.xaml</DependentUpon>
+    </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -93,6 +99,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="WindowRoomList.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Window_invited.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Window_inviting.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

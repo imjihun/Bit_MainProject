@@ -1,0 +1,13 @@
+﻿<Window x:Class="_04_Chatting_Client_01.Window_invited"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:_04_Chatting_Client_01"
+        mc:Ignorable="d"
+        Title="Window_invited" Height="100" Width="300">
+    <Grid>
+        <TextBlock x:Name="textBlock_invite" Margin="5,5,5,5" Height="30" VerticalAlignment="Top" FontSize="16" TextWrapping="Wrap" Text=""/>
+        <Button x:Name="button_ok" Margin="5,5,5,5" Content="ok" FontSize="15" VerticalAlignment="Bottom" Width="75" Height="25" Background="{x:Null}"/>
+    </Grid>
+</Window>

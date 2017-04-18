@@ -43,7 +43,7 @@ namespace _04_Chatting_Client_01
 
 		private void createRoom()
 		{
-			if (textBox_subject.Text.Length < 1)
+			if (textBox_subject.Text.Length < 1 || textBox_subject.Text.Length >= Macro.SIZE_ROOM_SUBJECT)
 				return;
 
 			MyNetwork.net.sendCreateRoom(textBox_subject.Text, checkBox_secret.IsChecked.Value);

@@ -17,10 +17,11 @@ namespace _04_Chatting_Client_01
 		public const UInt16 CMD_TOTAL_ROOM_LIST = 60;
 		public const UInt16 CMD_MY_ROOM_LIST = 70;
 		public const UInt16 CMD_CHATTING_MESSAGE = 80;
+		public const UInt16 CMD_INVITE = 90;
 		#endregion
 
 		// packet[SIZE_HEADER] == CMD_FAIL
-		public const byte CMD_FAIL = 1;
+		public const UInt16 CMD_FAIL = 10000;
 
 		public const int SIZE_CMD = 2;
 		public const int SIZE_PACKET_LENGTH = 4;

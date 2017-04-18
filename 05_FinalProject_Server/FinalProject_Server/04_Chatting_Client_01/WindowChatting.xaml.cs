@@ -34,11 +34,19 @@ namespace _04_Chatting_Client_01
 			my_room.wnd = this;
 			this.Loaded += WindowChatting_Loaded;
 			this.Closed += WindowChatting_Closed;
+			button_invite.Click += Button_invite_Click;
+		}
+
+		private void Button_invite_Click(object sender, RoutedEventArgs e)
+		{
+			Window_inviting wnd = new Window_inviting(my_room.room_number);
+			wnd.ShowDialog();
 		}
 
 		private void WindowChatting_Loaded(object sender, RoutedEventArgs e)
 		{
-			this.Title = "[ " + my_room.Count_member + " ] " + my_room.Subject;
+			this.Title = "[ " + my_room.Count_member + " ] " + my_room.Subject.TrimEnd('\0');
+			textBlock_title.Text = "[ " + my_room.Count_member + " ] " + my_room.Subject.TrimEnd('\0');
 		}
 
 		private void WindowChatting_Closed(object sender, EventArgs e)
