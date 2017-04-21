@@ -75,7 +75,9 @@ namespace _04_Chatting_Client_01
 			rijndaelCipher.Key = key;
 			rijndaelCipher.IV = iv;
 			ICryptoTransform transform = rijndaelCipher.CreateEncryptor();
-			return transform.TransformFinalBlock(buffer, offset, length);
+
+			byte[] ret = transform.TransformFinalBlock(buffer, offset, length);
+			return ret;
 		}
 		private static byte[] _decryptCbcmode(byte[] buffer, int offset, int length, byte[] key)
 		{
@@ -135,6 +137,7 @@ namespace _04_Chatting_Client_01
 
 			byte[] ret = new byte[size_ret];
 			Array.Copy(tmp, ret, size_ret);
+
 			return ret;
 
 			//ICryptoTransform transform = rijndaelCipher.CreateDecryptor();

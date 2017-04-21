@@ -21,13 +21,17 @@ namespace _04_Chatting_Client_01
 	{
 		MyRoom my_room = null;
 
+		public Window_inviting wnd_inviting = null;
+
 		public WindowChatting(MyRoom _my_room)
 		{
 			InitializeComponent();
+			// this.Owner = WindowRoomList.wnd;
+
 			my_room = _my_room;
 
 			textBlock_chat.Text = "";
-			textBlock_chat.Text += my_room.log_chatting.ToString();
+			textBlock_chat.Text += my_room.Log_chatting.ToString();
 			textBox_input.Focus();
 			textBox_input.KeyDown += TextBox_input_KeyDown;
 
@@ -35,18 +39,67 @@ namespace _04_Chatting_Client_01
 			this.Loaded += WindowChatting_Loaded;
 			this.Closed += WindowChatting_Closed;
 			button_invite.Click += Button_invite_Click;
+			this.KeyDown += WindowChatting_KeyDown;
+			this.MouseLeftButtonDown += WindowChatting_MouseLeftButtonDown;
+			this.PreviewMouseLeftButtonDown += WindowChatting_PreviewMouseLeftButtonDown;
+			this.MouseLeftButtonUp += WindowChatting_MouseLeftButtonUp;
+
+			my_room.grd.Children.OfType<Button>().FirstOrDefault().Background = Brushes.White;
+			if(my_room.notice != null)
+				my_room.notice.Close();
+		}
+		
+
+		private void WindowChatting_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+		{
+			textBox_input.Focus();
+		}
+
+		private void WindowChatting_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+		{
+			textBox_input.Focus();
+		}
+
+		private void WindowChatting_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+		{
+			textBox_input.Focus();
+		}
+
+		private void WindowChatting_KeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.Key == Key.Escape)
+				this.Close();
 		}
 
 		private void Button_invite_Click(object sender, RoutedEventArgs e)
 		{
-			Window_inviting wnd = new Window_inviting(my_room.room_number);
-			wnd.ShowDialog();
+			if (wnd_inviting == null)
+			{
+				wnd_inviting = new Window_inviting(my_room.room_number);
+				wnd_inviting.Left = this.Left + this.Width / 2 - wnd_inviting.Width / 2;
+				wnd_inviting.Top = this.Top + this.Height / 2 - wnd_inviting.Height / 2;
+				wnd_inviting.Owner = this;
+				wnd_inviting.Show();
+				//wnd.ShowDialog();
+			}
+			else
+			{
+				wnd_inviting.inputFocus();
+			}
 		}
 
 		private void WindowChatting_Loaded(object sender, RoutedEventArgs e)
 		{
-			this.Title = "[ " + my_room.Count_member + " ] " + my_room.Subject.TrimEnd('\0');
-			textBlock_title.Text = "[ " + my_room.Count_member + " ] " + my_room.Subject.TrimEnd('\0');
+			// for title update
+			my_room.Count_member = my_room.Count_member;
+
+			// secret room background
+			if (my_room.Status == Macro.ROOM_INFO_STATUS_SECRET)
+			{
+				mygrid.Background = Brushes.LightGoldenrodYellow;
+				//this.Background = Brushes.Red;
+				//mygrid.Margin = new Thickness(1, 1, 1, 1);
+			}
 		}
 
 		private void WindowChatting_Closed(object sender, EventArgs e)
@@ -67,7 +120,7 @@ namespace _04_Chatting_Client_01
 		
 		public void updateChat()
 		{
-			textBlock_chat.Text = my_room.log_chatting.ToString();
+			textBlock_chat.Text = my_room.Log_chatting.ToString();
 		}
 	}
 

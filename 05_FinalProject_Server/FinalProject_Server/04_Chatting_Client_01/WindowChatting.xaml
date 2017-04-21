@@ -5,21 +5,22 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:_04_Chatting_Client_01"
         mc:Ignorable="d"
-        Title="WindowChatting" Height="500" Width="300">
-    <Window.Resources>
-        <BooleanToVisibilityConverter x:Key="MyBoolToVisibilityConverter" />
-    </Window.Resources>
+        Title="chatting" Height="500" Width="300">
     <Grid x:Name="mygrid" Background="White" >
-        <Button x:Name="button_invite" Margin="5,5,5,5" Content="Invite" HorizontalAlignment="Right" VerticalAlignment="Top" Height="40" Width="60" Background="{x:Null}" BorderBrush="#FF808D00" FontSize="16"/>
-        <TextBlock x:Name="textBlock_title" Margin="10,5,70,5" VerticalAlignment="Top" Height="40" TextWrapping="Wrap" />
-        <Grid Margin="10,50,10,100" Background="#FF5F6800">
-            <ScrollViewer IsTabStop="True" VerticalScrollBarVisibility="Auto" local:ScrollViewerExtensions.AlwaysScrollToEnd="True" >
-                <TextBlock x:Name="textBlock_chat" Margin="1,1,1,1" TextWrapping="Wrap" Background="White"/>
-            </ScrollViewer>
-        </Grid>
-        <TextBlock Height="90" Margin="10,0,10,5" VerticalAlignment="Bottom" Text="Input Your Message" FontSize="20" 
+        <Button x:Name="button_invite" Margin="5,5,5,5" Content="Invite" HorizontalAlignment="Right" VerticalAlignment="Top" Height="40" Width="60" Background="{x:Null}" BorderBrush="YellowGreen" FontSize="16"/>
+        <Border Margin="5,5,70,5" Height="40" VerticalAlignment="Top" BorderBrush="YellowGreen" BorderThickness="1" CornerRadius="5">
+            <TextBlock x:Name="textBlock_title" Margin="5,5,5,5" VerticalAlignment="Top" Height="40" TextWrapping="Wrap" />
+        </Border>
+        <Border Margin="5,50,5,100" BorderBrush="YellowGreen" BorderThickness="1" CornerRadius="10">
+            <Grid Margin="5,5,5,5">
+                <ScrollViewer IsTabStop="True" VerticalScrollBarVisibility="Auto" local:ScrollViewerExtensions.AlwaysScrollToEnd="True" >
+                    <TextBlock x:Name="textBlock_chat" Margin="1,1,1,1" TextWrapping="Wrap"/>
+                </ScrollViewer>
+            </Grid>
+        </Border>
+        <TextBlock Height="90" Margin="5,0,5,5" VerticalAlignment="Bottom" Text="Input Your Message" FontSize="20" 
                    Foreground="LightSteelBlue" Visibility="{Binding ElementName=textBox_input, Path=Text.IsEmpty, Converter={StaticResource MyBoolToVisibilityConverter}}" FontStyle="Italic" TextDecorations="{x:Null}" />
-        <TextBox x:Name="textBox_input" Height="90" Margin="10,0,10,5" TextWrapping="Wrap" VerticalAlignment="Bottom" Background="{x:Null}"/>
+        <TextBox x:Name="textBox_input" Height="90" Margin="5,0,5,5" TextWrapping="Wrap" VerticalAlignment="Bottom" Background="{x:Null}" BorderBrush="YellowGreen"/>
 
     </Grid>
 </Window>

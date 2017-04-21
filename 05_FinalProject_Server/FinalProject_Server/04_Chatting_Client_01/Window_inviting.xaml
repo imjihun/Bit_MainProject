@@ -5,14 +5,28 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:_04_Chatting_Client_01"
         mc:Ignorable="d"
-        Title="Invite" Height="100" Width="300">
-    <Window.Resources>
-        <BooleanToVisibilityConverter x:Key="MyBoolToVisibilityConverter" />
-    </Window.Resources>
+        Title="Invite" Height="120" Width="320"
+        WindowStyle="None" ResizeMode="NoResize"
+        AllowsTransparency="True" Background="Transparent">
     <Grid>
-        <TextBlock Height="30" Margin="5,5,5,5" Text="Input Your Message" FontSize="20" 
-                   Foreground="LightSteelBlue" Visibility="{Binding ElementName=textBox_yourid, Path=Text.IsEmpty, Converter={StaticResource MyBoolToVisibilityConverter}}" FontStyle="Italic" TextDecorations="{x:Null}" />
-        <TextBox x:Name="textBox_yourid" Margin="5,5,5,5" Height="30" TextWrapping="Wrap" Background="{x:Null}" FontSize="20"/>
+        <Border Margin="10">
+            <Border.Effect>
+                <DropShadowEffect Color="Gray"
+                              Direction="270"
+                              BlurRadius="10"
+                              ShadowDepth="1" />
+            </Border.Effect>
+            <Grid Background="White" />
+        </Border>
+        <Grid Margin="10">
+            <TextBlock Height="35" Margin="5,10,5,0" VerticalAlignment="Top"
+                       Text="Input Id To Invite" FontSize="20" 
+                       Foreground="LightSteelBlue" Visibility="{Binding ElementName=textBox_yourid, Path=Text.IsEmpty, Converter={StaticResource MyBoolToVisibilityConverter}}" FontStyle="Italic" TextDecorations="{x:Null}" />
+            <TextBox x:Name="textBox_yourid" Margin="5,10,5,0" Height="35" VerticalAlignment="Top"
+                     TextWrapping="Wrap" Background="{x:Null}" FontSize="20"/>
 
+            <Button x:Name="button_ok" Margin="5,5,100,5" Content="ok" FontSize="15" VerticalAlignment="Bottom" Width="75" Height="25" Background="White"/>
+            <Button x:Name="button_cancel" Margin="100,5,5,5" Content="cancel" FontSize="15" VerticalAlignment="Bottom" Width="75" Height="25" Background="White"/>
+        </Grid>
     </Grid>
 </Window>

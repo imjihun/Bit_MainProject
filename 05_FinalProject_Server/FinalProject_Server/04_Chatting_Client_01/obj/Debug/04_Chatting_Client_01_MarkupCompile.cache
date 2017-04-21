@@ -1,7 +1,7 @@
 ﻿04_Chatting_Client_01
 
 
-winexe
+exe
 C#
 .cs
 D:\git\Bit_MainProject\05_FinalProject_Server\FinalProject_Server\04_Chatting_Client_01\obj\Debug\
@@ -10,11 +10,11 @@ none
 false
 DEBUG;TRACE
 D:\git\Bit_MainProject\05_FinalProject_Server\FinalProject_Server\04_Chatting_Client_01\App.xaml
-6-304229696
+7539217196
 
-151286501708
+16-903678394
 13738642453
-MainWindow.xaml;WindowChatting.xaml;WindowCreateRoom.xaml;WindowRoomList.xaml;Window_invited.xaml;Window_inviting.xaml;
+WindowChatting.xaml;WindowLogin.xaml;WindowRoomList.xaml;Window_createRoom.xaml;Window_invited.xaml;Window_inviting.xaml;Window_notice.xaml;
 
 False
 

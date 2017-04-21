@@ -11,6 +11,8 @@ namespace test
 	{
 		static void Main(string[] args)
 		{
+			StringBuilder strbuilder = new StringBuilder();
+			Console.WriteLine(strbuilder.MaxCapacity);
 			string str = "hi\0\0\0\0\0\0\0";
 			Console.WriteLine(str.TrimEnd('\0') + "end");
 			Console.WriteLine(str.Length);

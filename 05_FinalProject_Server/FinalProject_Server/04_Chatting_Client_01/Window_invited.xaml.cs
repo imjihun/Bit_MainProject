@@ -22,14 +22,35 @@ namespace _04_Chatting_Client_01
 		public Window_invited(string inviteid, int room_number)
 		{
 			InitializeComponent();
+			this.Owner = WindowRoomList.wnd;
+
+			this.KeyDown += Window_invited_KeyDown;
+			this.MouseLeftButtonDown += Window_invited_MouseLeftButtonDown;
+
 			textBlock_invite.Text = inviteid.TrimEnd('\0') + "이(가) 초대하였습니다.";
+			button_cancel.Click += Button_cancel_Click;
 			button_ok.Click += delegate (object sender, RoutedEventArgs e)
 			{
 				MyNetwork.net.sendEnterRoom(room_number);
-				Console.WriteLine("\t\troom_number = " + room_number);
 				this.Close();
 			};
 			button_ok.Focus();
+		}
+
+		private void Window_invited_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+		{
+			this.DragMove();
+		}
+
+		private void Button_cancel_Click(object sender, RoutedEventArgs e)
+		{
+			Close();
+		}
+
+		private void Window_invited_KeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.Key == Key.Escape)
+				Close();
 		}
 	}
 }

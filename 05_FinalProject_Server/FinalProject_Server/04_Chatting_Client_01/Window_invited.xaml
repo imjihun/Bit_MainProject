@@ -5,9 +5,24 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:_04_Chatting_Client_01"
         mc:Ignorable="d"
-        Title="Window_invited" Height="100" Width="300">
+        Title="Window_invited" Height="120" Width="320"
+        WindowStyle="None"  ResizeMode="NoResize"
+        AllowsTransparency="True" Background="Transparent">
     <Grid>
-        <TextBlock x:Name="textBlock_invite" Margin="5,5,5,5" Height="30" VerticalAlignment="Top" FontSize="16" TextWrapping="Wrap" Text=""/>
-        <Button x:Name="button_ok" Margin="5,5,5,5" Content="ok" FontSize="15" VerticalAlignment="Bottom" Width="75" Height="25" Background="{x:Null}"/>
+        <Border Margin="10">
+            <Border.Effect>
+                <DropShadowEffect Color="Gray"
+                              Direction="270"
+                              BlurRadius="10"
+                              ShadowDepth="1" />
+            </Border.Effect>
+            <Grid Background="White" />
+        </Border>
+        <Grid Margin="10">
+            <Grid Background="White" Opacity="0.1"></Grid>
+            <TextBlock x:Name="textBlock_invite" Margin="5,5,5,5" Height="30" VerticalAlignment="Top" FontSize="16" TextWrapping="Wrap" Text=""/>
+            <Button x:Name="button_ok" Margin="5,5,100,5" Content="ok" FontSize="15" VerticalAlignment="Bottom" Width="75" Height="25" Background="White"/>
+            <Button x:Name="button_cancel" Margin="100,5,5,5" Content="cancel" FontSize="15" VerticalAlignment="Bottom" Width="75" Height="25" Background="White"/>
+        </Grid>
     </Grid>
 </Window>
